@@ -23,7 +23,7 @@ services:
     container_name: mariadb-lamp
     environment:
       MYSQL_ROOT_PASSWORD: rootadm
-      MYSQL_DATABASE: db
+      MYSQL_DATABASE: sisurpe
       MYSQL_USER: admin
       MYSQL_PASSWORD: rootadm
     restart: always
