@@ -1,0 +1,62 @@
+services:
+
+  app:
+    container_name: docker-lamp
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html/src
+      - ./config/php.ini:/etc/php/8.3/apache2/php.ini
+      - ./config/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./logs/apache2:/var/log/apache2
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 12G
+    networks:
+      - app-network
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-lamp
+    environment:
+      MYSQL_ROOT_PASSWORD: rootadm
+      MYSQL_DATABASE: db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: rootadm
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+      - ./src/db/db.sql:/docker-entrypoint-initdb.d/db.sql
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 12G
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-lamp
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 2000M
+    restart: always
+    ports:
+      - 8080:80
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
