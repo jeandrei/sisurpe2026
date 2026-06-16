@@ -105,6 +105,9 @@
     /* quando a inscrição é feita pelo usuário */
     public function inscrever($inscricoes_id){ 
       $error=[];
+      if(!$this->inscricaoModel->inscricaoAberta($inscricoes_id)){        
+         $error['inscricoes_id_err'] = 'Inscrição fechada!';
+      }      
       if(empty($inscricoes_id)){
         $error['inscricoes_id_err'] = 'Id obrigatório';
       }
